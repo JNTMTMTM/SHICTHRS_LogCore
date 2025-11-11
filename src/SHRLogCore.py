@@ -1,4 +1,6 @@
 
+# src\SHRLogCore.py
+
 import sys , os
 import inspect
 import logging
@@ -9,6 +11,7 @@ init()
 from utils.config.SHRLogCore_readConfigFile import read_config_file
 from utils.config.SHRLogCore_writeConfigFile import write_ini_file
 from utils.time.SHRLogCore_pytzTimeSynchronizer import sync_system_time
+from utils.hash.SHRLogCore_getHashCode import get_md5_hash
 
 class SHRLogCore():
     def __init__(self):
@@ -23,7 +26,7 @@ class SHRLogCore():
             logging.basicConfig(
                 level = logging.DEBUG,
                 format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                filename = os.path.join(self._EXEPATH , 'log' , 'SHRLogCore.log') ,
+                filename = os.path.join(self._EXEPATH , 'log' , f'{sync_system_time(True)}-{get_md5_hash(sync_system_time())}.log') ,
                 datefmt = '%Y-%m-%d %H:%M:%S' ,
                 encoding = 'utf-8'
             )
@@ -95,6 +98,5 @@ class SHRLogCore():
         if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutpuingLogsInConsole']):
             self.__outputLogsInConsole(log_level , log_message)
         LOG_LEVEL_CPT[log_level](log_message)
-
 
 log = SHRLogCore()
