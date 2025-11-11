@@ -15,14 +15,25 @@ class SHRLogCore():
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
         self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutpuingLogsInConsole': 'True'}}
-        self.__init_SHRLogCoreConfigSettings()
+        self.__init_SHRLogCoreConfigSettings()  # 初始化日志配置文件
+        self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
+    
+    def __init_SHRLogCoreRecorder(self):
+        logging.basicConfig(
+            level = logging.DEBUG,
+            format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            filename = 'app.log' ,
+            datefmt = '%Y-%m-%d %H:%M:%S' ,
+            encoding = 'utf-8'
+        )
+        self._logger = logging.getLogger("SHRLogCore")
+        self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
     
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
             try:
                 self._SHRLogCoreConfigSettings = read_config_file(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
                 self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
-                print(self._SHRLogCoreConfigSettings)
             except:
                 self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件读取失败')
         else:
@@ -47,9 +58,38 @@ class SHRLogCore():
         MAGENTA             | CRITICAL
         """
 
-        LOG_LEVEL_COLOR_CPT : dict = {'DEBUG' : '\033[32m' , 'INFO' : '\033[34m' , 'WARNING' : '\033[33m' , 'ERROR' : '\033[31m' , 'CRITICAL' : '\033[35m'}
+        LOG_LEVEL_COLOR_CPT : dict = {'DEBUG' : '\033[32m' ,
+                                    'INFO' : '\033[34m' ,
+                                    'WARNING' : '\033[33m' ,
+                                    'ERROR' : '\033[31m' ,
+                                    'CRITICAL' : '\033[35m'}
+
         END_COLOR : str = '\033[0m'
         temp_frame = inspect.currentframe()
         print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+
+    def add_log(self , log_level : str , log_message : str):
+        """
+        >>> LOG_LEVEL_CPT   | LOG-LEVELS
+        --------------------|-------------
+                            | DEBUG
+                            | INFO
+                            | WARNING
+                            | ERROR
+                            | CRITICAL
+        """
+        LOG_LEVEL_CPT : dict = {'DEBUG' : self._logger.debug ,
+                            'INFO' : self._logger.info ,
+                            'WARNING' : self._logger.warning ,
+                            'ERROR' : self._logger.error ,
+                            'CRITICAL' : self._logger.critical}
+        
+        temp_frame = inspect.currentframe()
+        log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
+
+        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutpuingLogsInConsole']):
+            self.__outputLogsInConsole(log_level , log_message)
+        LOG_LEVEL_CPT[log_level](log_message)
+
 
 log = SHRLogCore()
