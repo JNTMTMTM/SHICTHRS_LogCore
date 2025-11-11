@@ -121,5 +121,3 @@ class SHRLogCore():
         if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
             log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
         LOG_LEVEL_CPT[log_level](log_message)
-
-log = SHRLogCore()
