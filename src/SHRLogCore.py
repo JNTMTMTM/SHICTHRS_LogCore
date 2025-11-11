@@ -1,5 +1,9 @@
-
+# *-* coding: utf-8 *-*
 # src\SHRLogCore.py
+# SHICTHRS LOG CORE
+# AUTHOR : SHICTHRS-JNTMTMTM
+# Copyright : © 2025-2026 SHICTHRS, Std. All rights reserved.
+# lICENSE : GPL-3.0
 
 import sys , os
 import inspect
@@ -17,8 +21,11 @@ class SHRLogCore():
     def __init__(self):
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
-        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutpuingLogsInConsole': 'True'}}
+        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True' ,
+                                                                    'isOutputFunctionLoggerName' : 'True' ,
+                                                                    'isAutoClearOutdatedLogs' : 'False'}}
         self.__init_SHRLogCoreConfigSettings()  # 初始化日志配置文件
+        self.__clear_OutdatedLogs()  # 清理过期日志
         self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
     
     def __init_SHRLogCoreRecorder(self):
@@ -37,6 +44,15 @@ class SHRLogCore():
             self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
             self.__init_SHRLogCoreRecorder()
     
+    def __clear_OutdatedLogs(self):
+        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isAutoClearOutdatedLogs']) and os.path.exists(os.path.join(self._EXEPATH , 'log')):
+            file_list = os.listdir(os.path.join(self._EXEPATH , 'log'))
+            for file in file_list:
+                file_path = os.path.join(os.path.join(self._EXEPATH , 'log') , file)
+                if os.path.isfile(file_path) and file_path.endswith('.log'):
+                    os.remove(file_path)
+            self.__outputLogsInConsole('INFO' , '过期日志清理完成')
+
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
             try:
@@ -55,7 +71,7 @@ class SHRLogCore():
                 self.__outputLogsInConsole('INFO' , 'config 文件夹已创建')
                 self.__init_SHRLogCoreConfigSettings()
     
-    def __outputLogsInConsole(self , log_level : str , log_message : str):
+    def __outputLogsInConsole(self , log_level : str , log_message : str , log_source : str = None):
         """
         LOG_LEVEL_COLOR_CPT | LOG-LEVELS
         --------------------|-------------
@@ -74,7 +90,14 @@ class SHRLogCore():
 
         END_COLOR : str = '\033[0m'
         temp_frame = inspect.currentframe()
-        print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+        
+        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
+            if log_source:
+                print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
+            else:
+                print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+        else:
+            print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {END_COLOR}: {log_message}')
 
     def add_log(self , log_level : str , log_message : str):
         """
@@ -93,10 +116,10 @@ class SHRLogCore():
                             'CRITICAL' : self._logger.critical}
         
         temp_frame = inspect.currentframe()
-        log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
-
-        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutpuingLogsInConsole']):
-            self.__outputLogsInConsole(log_level , log_message)
+        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputLogsInConsole']):
+            self.__outputLogsInConsole(log_level , log_message , temp_frame.f_back.f_code.co_name)
+        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
+            log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
         LOG_LEVEL_CPT[log_level](log_message)
 
 log = SHRLogCore()
