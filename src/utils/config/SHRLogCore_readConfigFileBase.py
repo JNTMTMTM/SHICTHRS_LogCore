@@ -1,4 +1,6 @@
 
+# src\utils\config\SHRLogCore_readConfigFileBase.py
+
 import configparser
 
 class CaseSensitiveConfigParser(configparser.ConfigParser):
