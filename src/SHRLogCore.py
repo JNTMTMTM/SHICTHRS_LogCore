@@ -19,15 +19,20 @@ class SHRLogCore():
         self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
     
     def __init_SHRLogCoreRecorder(self):
-        logging.basicConfig(
-            level = logging.DEBUG,
-            format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            filename = 'app.log' ,
-            datefmt = '%Y-%m-%d %H:%M:%S' ,
-            encoding = 'utf-8'
-        )
-        self._logger = logging.getLogger("SHRLogCore")
-        self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
+        if os.path.exists(os.path.join(self._EXEPATH , 'log')):
+            logging.basicConfig(
+                level = logging.DEBUG,
+                format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                filename = os.path.join(self._EXEPATH , 'log' , 'SHRLogCore.log') ,
+                datefmt = '%Y-%m-%d %H:%M:%S' ,
+                encoding = 'utf-8'
+            )
+            self._logger = logging.getLogger("SHRLogCore")
+            self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
+        else:
+            os.mkdir(os.path.join(self._EXEPATH , 'log'))
+            self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
+            self.__init_SHRLogCoreRecorder()
     
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
