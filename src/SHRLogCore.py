@@ -7,23 +7,34 @@ sys.path.append('..')
 init()
 
 from utils.config.SHRLogCore_readConfigFile import read_config_file
+from utils.config.SHRLogCore_writeConfigFile import write_ini_file
 from utils.time.SHRLogCore_pytzTimeSynchronizer import sync_system_time
 
 class SHRLogCore():
     def __init__(self):
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
+        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutpuingLogsInConsole': 'True'}}
         self.__init_SHRLogCoreConfigSettings()
     
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
             try:
                 self._SHRLogCoreConfigSettings = read_config_file(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
-                self.__outputLogsInConsole('DEBUG' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
+                self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
+                print(self._SHRLogCoreConfigSettings)
             except:
                 self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件读取失败')
         else:
-            self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
+            if os.path.exists(os.path.join(self._EXEPATH , 'config')):
+                self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
+                write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+                self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 重新写入完成')
+                self.__init_SHRLogCoreConfigSettings()
+            else:
+                os.mkdir(os.path.join(self._EXEPATH , 'config'))
+                self.__outputLogsInConsole('INFO' , 'config 文件夹已创建')
+                self.__init_SHRLogCoreConfigSettings()
     
     def __outputLogsInConsole(self , log_level : str , log_message : str):
         """
