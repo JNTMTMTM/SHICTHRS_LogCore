@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: SHRLogCore
+Version: 1.0.0
+Summary: SHICTHRS LOG CORE logging system
+Home-page: https://github.com/JNTMTMTM/SHICTHRS_LogCore
+Author: SHICTHRS
+Author-email: contact@shicthrs.com
+License: GPL-3.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: license
+Dynamic: summary
