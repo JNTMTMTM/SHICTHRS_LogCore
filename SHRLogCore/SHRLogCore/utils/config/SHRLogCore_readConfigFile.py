@@ -1,8 +1,7 @@
 
 # src\utils\config\SHRLogCore_readConfigFile.py
 
-import os
-from utils.config.SHRLogCore_readConfigFileBase import CaseSensitiveConfigParser
+from .SHRLogCore_readConfigFileBase import CaseSensitiveConfigParser
 
 def read_config_file(file_path : str) -> dict:
     temp_result_dict : dict = {}

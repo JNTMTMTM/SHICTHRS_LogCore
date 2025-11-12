@@ -1,7 +1,7 @@
 
 # src\utils\config\SHRLogCore_writeConfigFile.py
 
-from utils.config.SHRLogCore_readConfigFileBase import CaseSensitiveConfigParser
+from .SHRLogCore_readConfigFileBase import CaseSensitiveConfigParser
 
 def write_ini_file(config_dict : dict, file_path : str):
     object_conf = CaseSensitiveConfigParser()
