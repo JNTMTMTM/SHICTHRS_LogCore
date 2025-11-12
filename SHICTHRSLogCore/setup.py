@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name='SHRLogCore',
+setup(name='SHICTHRSLogCore',
       version='1.0.0',
       description='SHICTHRS LOG CORE logging system',
       url='https://github.com/JNTMTMTM/SHICTHRS_LogCore',
