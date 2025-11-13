@@ -77,13 +77,13 @@ class SHRLogCore():
     
     def __outputLogsInConsole(self , log_level : str , log_message : str , log_source : str = None):
         """
-        LOG_LEVEL_COLOR_CPT | LOG-LEVELS
-        --------------------|-------------
-        GREEN               | DEBUG
-        BLUE                | INFO
-        YELLOW              | WARNING
-        RED                 | ERROR
-        MAGENTA             | CRITICAL
+        >>> LOG_LEVEL_COLOR_CPT | LOG-LEVELS
+        ------------------------|-------------
+        GREEN                   | DEBUG
+        BLUE                    | INFO
+        YELLOW                  | WARNING
+        RED                     | ERROR
+        MAGENTA                 | CRITICAL
         """
 
         LOG_LEVEL_COLOR_CPT : dict = {'DEBUG' : '\033[32m' ,
