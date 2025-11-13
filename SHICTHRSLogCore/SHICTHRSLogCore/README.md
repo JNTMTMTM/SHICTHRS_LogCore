@@ -28,14 +28,20 @@ pip install colorama
 
 ### 安装方式
 
-1. **克隆仓库**
+1. **使用pip安装（推荐）**
+
+```bash
+pip install SHICTHRSLogCore
+```
+
+2. **克隆仓库**
 
 ```bash
 git clone https://github.com/SHICTHRS/SHICTHRS_LogCore.git
 cd SHICTHRS_LogCore
 ```
 
-2. **将模块添加到项目**
+3. **将模块添加到项目**
 
 将`src`目录复制到您的项目中，或者将项目路径添加到Python路径中。
 
