@@ -16,15 +16,21 @@ from .utils.config.SHRLogCore_writeConfigFile import write_ini_file
 from .utils.time.SHRLogCore_pytzTimeSynchronizer import sync_system_time
 from .utils.hash.SHRLogCore_getHashCode import get_md5_hash
 
-print('\033[1mWelcome to use SHRLogCore By SHICTHRS-JNTMTMTM\033[0m\n\033[34mgithub : https://github.com/JNTMTMTM/SHICTHRS_LogCore\033[0m')
+print('\033[1mWelcome to use SHRLogCore - LOGCORE Logging System\033[0m\n|  \033[1;34mGithub : https://github.com/JNTMTMTM/SHICTHRS_LogCore\033[0m')
+print('|  \033[1mAlgorithms = rule ; Questioning = approval\033[0m')
+print('|  \033[1mCopyright : © 2025-2026 SHICTHRS, Std. All rights reserved.\033[0m\n')
+
 
 class SHRLogCore():
-    def __init__(self):
+    def __init__(self , root : str):
+        self._ROOT = root
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
-        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True' ,
-                                                                    'isOutputFunctionLoggerName' : 'True' ,
-                                                                    'isAutoClearOutdatedLogs' : 'False'}}
+        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True',
+                                                                    'isOutputFunctionLoggerName': 'True',
+                                                                        'isAutoClearOutdatedLogs': 'True'},
+                                                        'SHRLogCore_LogColor': {'DEBUG': 'white', 'INFO': 'white', 'WARNING': 'white',
+                                                                                'ERROR': 'white', 'CRITICAL': 'white'}}
         self.__init_SHRLogCoreConfigSettings()  # 初始化日志配置文件
         self.__clear_OutdatedLogs()  # 清理过期日志
         self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
@@ -38,7 +44,7 @@ class SHRLogCore():
                 datefmt = '%Y-%m-%d %H:%M:%S' ,
                 encoding = 'utf-8'
             )
-            self._logger = logging.getLogger("SHRLogCore")
+            self._logger = logging.getLogger(self._ROOT)
             self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
         else:
             os.mkdir(os.path.join(self._EXEPATH , 'log'))
@@ -58,22 +64,27 @@ class SHRLogCore():
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
             try:
                 self._SHRLogCoreConfigSettings = read_config_file(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+                if self._SHRLogCoreDefaultConfigSettings.keys() != self._SHRLogCoreConfigSettings.keys():
+                    self._SHRLogCoreConfigSettings = {}
+                    self.__rebulid_SHRLogCoreConfigSettings()
+                    self.__outputLogsInConsole('WARNING' , f'SHRLogCoreConfigSettings.ini 丢失 SECTION 尝试恢复至默认设置')
                 self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
             except:
                 self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件读取失败')
         else:
-            try:
-                if os.path.exists(os.path.join(self._EXEPATH , 'config')):
-                    self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
-                    write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
-                    self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 重新写入完成')
-                    self.__init_SHRLogCoreConfigSettings()
-                else:
-                    os.mkdir(os.path.join(self._EXEPATH , 'config'))
-                    self.__outputLogsInConsole('INFO' , 'config 文件夹已创建')
-                    self.__init_SHRLogCoreConfigSettings()
-            except Exception as e:
-                print(e)
+            self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
+            self.__rebulid_SHRLogCoreConfigSettings()
+            self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 重新写入完成')
+    
+    def __rebulid_SHRLogCoreConfigSettings(self):
+        try:
+            self.__outputLogsInConsole('DEBUG' , 'CONFIG_RE-BUILD 尝试重新写入')
+            if not os.path.exists(os.path.join(self._EXEPATH , 'config')):
+                os.mkdir(os.path.join(self._EXEPATH , 'config'))
+            write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+            self.__init_SHRLogCoreConfigSettings()
+        except Exception as e:
+            print(e)
     
     def __outputLogsInConsole(self , log_level : str , log_message : str , log_source : str = None):
         """
@@ -85,6 +96,9 @@ class SHRLogCore():
         RED                     | ERROR
         MAGENTA                 | CRITICAL
         """
+        COLOR_CPT : dict = {'grey' : '\033[30m' , 'red' : '\033[31m' , 'green' : '\033[32m' ,
+                            'orange' : '\033[33m' , 'blue' : '\033[34m' , 'purplish' : '\033[35m' ,
+                            'cyan' : '\033[36m' , 'white' : '\033[37m'}
 
         LOG_LEVEL_COLOR_CPT : dict = {'DEBUG' : '\033[32m' ,
                                     'INFO' : '\033[34m' ,
@@ -98,11 +112,11 @@ class SHRLogCore():
         if self._SHRLogCoreConfigSettings:
             if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
                 if log_source:
-                    print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
+                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
                 else:
-                    print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
             else:
-                print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {END_COLOR}: {log_message}')
+                print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {END_COLOR}: {log_message}')
         else:
             if log_source:
                     print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
@@ -132,3 +146,12 @@ class SHRLogCore():
         if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
             log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
         LOG_LEVEL_CPT[log_level](log_message)
+
+    def update_log_config(self , section : str , key : str , value : str) -> bool:
+        try:
+            self._SHRLogCoreConfigSettings[section][key] = value
+            write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+            self.add_log('DEBUG' , '配置文件文件更新完成')
+            return True
+        except:
+            return False
