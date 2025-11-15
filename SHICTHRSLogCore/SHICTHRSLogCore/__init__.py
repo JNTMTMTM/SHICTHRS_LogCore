@@ -140,3 +140,12 @@ class SHRLogCore():
         if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
             log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
         LOG_LEVEL_CPT[log_level](log_message)
+
+    def update_log_config(self , section : str , key : str , value : str) -> bool:
+        try:
+            self._SHRLogCoreConfigSettings[section][key] = value
+            write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+            self.add_log('DEBUG' , '配置文件文件更新完成')
+            return True
+        except:
+            return False
