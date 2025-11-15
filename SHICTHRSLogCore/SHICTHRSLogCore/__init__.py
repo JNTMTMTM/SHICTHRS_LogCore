@@ -22,7 +22,8 @@ print('|  \033[1mCopyright : © 2025-2026 SHICTHRS, Std. All rights reserved.\03
 
 
 class SHRLogCore():
-    def __init__(self):
+    def __init__(self , root : str):
+        self._ROOT = root
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
         self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True',
@@ -43,7 +44,7 @@ class SHRLogCore():
                 datefmt = '%Y-%m-%d %H:%M:%S' ,
                 encoding = 'utf-8'
             )
-            self._logger = logging.getLogger("SHRLogCore")
+            self._logger = logging.getLogger(self._ROOT)
             self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
         else:
             os.mkdir(os.path.join(self._EXEPATH , 'log'))
