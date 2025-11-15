@@ -16,14 +16,20 @@ from .utils.config.SHRLogCore_writeConfigFile import write_ini_file
 from .utils.time.SHRLogCore_pytzTimeSynchronizer import sync_system_time
 from .utils.hash.SHRLogCore_getHashCode import get_md5_hash
 
-print('\033[1mWelcome to use SHRLogCore By SHICTHRS-JNTMTMTM\033[0m\n\033[34mgithub : https://github.com/JNTMTMTM/SHICTHRS_LogCore\033[0m')
+print('\033[1mWelcome to use SHRLogCore - LOGCORE Logging System\033[0m\n|  \033[1;34mGithub : https://github.com/JNTMTMTM/SHICTHRS_LogCore\033[0m')
+print('|  \033[1mAlgorithms = rule ; Questioning = approval\033[0m')
+print('|  \033[1mCopyright : © 2025-2026 SHICTHRS, Std. All rights reserved.\033[0m\n')
+
 
 class SHRLogCore():
     def __init__(self):
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
-        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True', 'isOutputFunctionLoggerName': 'True', 'isAutoClearOutdatedLogs': 'True'},
-                                                        'SHRLogCore_LogColor': {'DEBUG': 'cyan', 'INFO': 'cyan', 'WARNING': 'cyan', 'ERROR': 'cyan', 'CRITICAL': 'cyan'}}
+        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True',
+                                                                    'isOutputFunctionLoggerName': 'True',
+                                                                        'isAutoClearOutdatedLogs': 'True'},
+                                                        'SHRLogCore_LogColor': {'DEBUG': 'white', 'INFO': 'white', 'WARNING': 'white',
+                                                                                'ERROR': 'white', 'CRITICAL': 'white'}}
         self.__init_SHRLogCoreConfigSettings()  # 初始化日志配置文件
         self.__clear_OutdatedLogs()  # 清理过期日志
         self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
@@ -84,7 +90,6 @@ class SHRLogCore():
         RED                     | ERROR
         MAGENTA                 | CRITICAL
         """
-        print(self._SHRLogCoreConfigSettings)
         COLOR_CPT : dict = {'grey' : '\033[30m' , 'red' : '\033[31m' , 'green' : '\033[32m' ,
                             'orange' : '\033[33m' , 'blue' : '\033[34m' , 'purplish' : '\033[35m' ,
                             'cyan' : '\033[36m' , 'white' : '\033[37m'}
