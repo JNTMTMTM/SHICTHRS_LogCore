@@ -63,22 +63,27 @@ class SHRLogCore():
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
             try:
                 self._SHRLogCoreConfigSettings = read_config_file(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+                if self._SHRLogCoreDefaultConfigSettings.keys() != self._SHRLogCoreConfigSettings.keys():
+                    self._SHRLogCoreConfigSettings = {}
+                    self.__rebulid_SHRLogCoreConfigSettings()
+                    self.__outputLogsInConsole('WARNING' , f'SHRLogCoreConfigSettings.ini 丢失 SECTION 尝试恢复至默认设置')
                 self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
             except:
                 self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件读取失败')
         else:
-            try:
-                if os.path.exists(os.path.join(self._EXEPATH , 'config')):
-                    self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
-                    write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
-                    self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 重新写入完成')
-                    self.__init_SHRLogCoreConfigSettings()
-                else:
-                    os.mkdir(os.path.join(self._EXEPATH , 'config'))
-                    self.__outputLogsInConsole('INFO' , 'config 文件夹已创建')
-                    self.__init_SHRLogCoreConfigSettings()
-            except Exception as e:
-                print(e)
+            self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
+            self.__rebulid_SHRLogCoreConfigSettings()
+            self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 重新写入完成')
+    
+    def __rebulid_SHRLogCoreConfigSettings(self):
+        try:
+            self.__outputLogsInConsole('DEBUG' , 'CONFIG_RE-BUILD 尝试重新写入')
+            if not os.path.exists(os.path.join(self._EXEPATH , 'config')):
+                os.mkdir(os.path.join(self._EXEPATH , 'config'))
+            write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+            self.__init_SHRLogCoreConfigSettings()
+        except Exception as e:
+            print(e)
     
     def __outputLogsInConsole(self , log_level : str , log_message : str , log_source : str = None):
         """
