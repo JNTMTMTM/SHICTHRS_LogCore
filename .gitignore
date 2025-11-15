@@ -6,3 +6,5 @@
 *.pyc
 
 /log
+
+test.py

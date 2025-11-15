@@ -22,9 +22,8 @@ class SHRLogCore():
     def __init__(self):
         self._EXEPATH = os.getcwd()
         self._SHRLogCoreConfigSettings : dict = {}
-        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True' ,
-                                                                    'isOutputFunctionLoggerName' : 'True' ,
-                                                                    'isAutoClearOutdatedLogs' : 'False'}}
+        self._SHRLogCoreDefaultConfigSettings : dict = {'SHRLogCore': {'isOutputLogsInConsole': 'True', 'isOutputFunctionLoggerName': 'True', 'isAutoClearOutdatedLogs': 'True'},
+                                                        'SHRLogCore_LogColor': {'DEBUG': 'cyan', 'INFO': 'cyan', 'WARNING': 'cyan', 'ERROR': 'cyan', 'CRITICAL': 'cyan'}}
         self.__init_SHRLogCoreConfigSettings()  # 初始化日志配置文件
         self.__clear_OutdatedLogs()  # 清理过期日志
         self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
@@ -85,6 +84,10 @@ class SHRLogCore():
         RED                     | ERROR
         MAGENTA                 | CRITICAL
         """
+        print(self._SHRLogCoreConfigSettings)
+        COLOR_CPT : dict = {'grey' : '\033[30m' , 'red' : '\033[31m' , 'green' : '\033[32m' ,
+                            'orange' : '\033[33m' , 'blue' : '\033[34m' , 'purplish' : '\033[35m' ,
+                            'cyan' : '\033[36m' , 'white' : '\033[37m'}
 
         LOG_LEVEL_COLOR_CPT : dict = {'DEBUG' : '\033[32m' ,
                                     'INFO' : '\033[34m' ,
@@ -98,11 +101,11 @@ class SHRLogCore():
         if self._SHRLogCoreConfigSettings:
             if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
                 if log_source:
-                    print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
+                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
                 else:
-                    print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
             else:
-                print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {END_COLOR}: {log_message}')
+                print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {END_COLOR}: {log_message}')
         else:
             if log_source:
                     print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
