@@ -9,4 +9,5 @@ setup(name='SHICTHRSLogCore',
       license='GPL-3.0',
       packages=find_packages(),
       include_package_data=True,
+      install_requires=['colorama==0.4.6' , 'pytz==2025.2'],
       zip_safe=False)
