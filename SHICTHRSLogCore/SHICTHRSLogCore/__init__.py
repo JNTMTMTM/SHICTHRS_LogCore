@@ -1,5 +1,5 @@
 # *-* coding: utf-8 *-*
-# src\SHRLogCore.py
+# src\__init__.py
 # SHICTHRS LOG CORE
 # AUTHOR : SHICTHRS-JNTMTMTM
 # Copyright : © 2025-2026 SHICTHRS, Std. All rights reserved.
@@ -10,9 +10,7 @@ import inspect
 import logging
 from colorama import init
 init()
-
-from .utils.config.SHRLogCore_readConfigFile import read_config_file
-from .utils.config.SHRLogCore_writeConfigFile import write_ini_file
+from SHICTHRSConfigLoader import *
 from .utils.time.SHRLogCore_pytzTimeSynchronizer import sync_system_time
 from .utils.hash.SHRLogCore_getHashCode import get_md5_hash
 
@@ -63,7 +61,7 @@ class SHRLogCore():
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
             try:
-                self._SHRLogCoreConfigSettings = read_config_file(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+                self._SHRLogCoreConfigSettings = SHRConfigLoader_read_ini_file(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
                 if self._SHRLogCoreDefaultConfigSettings.keys() != self._SHRLogCoreConfigSettings.keys():
                     self._SHRLogCoreConfigSettings = {}
                     self.__rebulid_SHRLogCoreConfigSettings()
@@ -81,7 +79,7 @@ class SHRLogCore():
             self.__outputLogsInConsole('DEBUG' , 'CONFIG_RE-BUILD 尝试重新写入')
             if not os.path.exists(os.path.join(self._EXEPATH , 'config')):
                 os.mkdir(os.path.join(self._EXEPATH , 'config'))
-            write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+            SHRConfigLoader_write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
             self.__init_SHRLogCoreConfigSettings()
         except Exception as e:
             print(e)
@@ -150,7 +148,7 @@ class SHRLogCore():
     def update_log_config(self , section : str , key : str , value : str) -> bool:
         try:
             self._SHRLogCoreConfigSettings[section][key] = value
-            write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
+            SHRConfigLoader_write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
             self.add_log('DEBUG' , '配置文件文件更新完成')
             return True
         except:
