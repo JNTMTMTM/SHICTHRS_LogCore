@@ -8,6 +8,7 @@
 import os
 import inspect
 import logging
+from tkinter import EXCEPTION
 from colorama import init
 init()
 from SHICTHRSConfigLoader import *
@@ -18,6 +19,12 @@ print('\033[1mWelcome to use SHRLogCore - LOGCORE Logging System\033[0m\n|  \033
 print('|  \033[1mAlgorithms = rule ; Questioning = approval\033[0m')
 print('|  \033[1mCopyright : © 2025-2026 SHICTHRS, Std. All rights reserved.\033[0m\n')
 
+class SHRLogCoreException(BaseException):
+    def __init__(self , message: str) -> None:
+        self.message = message
+    
+    def __str__(self):
+        return self.message
 
 class SHRLogCore():
     def __init__(self , root : str):
@@ -34,29 +41,35 @@ class SHRLogCore():
         self.__init_SHRLogCoreRecorder()  # 初始化日志记录器
     
     def __init_SHRLogCoreRecorder(self):
-        if os.path.exists(os.path.join(self._EXEPATH , 'log')):
-            logging.basicConfig(
-                level = logging.DEBUG,
-                format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                filename = os.path.join(self._EXEPATH , 'log' , f'{sync_system_time(True)}-{get_md5_hash(sync_system_time())}.log') ,
-                datefmt = '%Y-%m-%d %H:%M:%S' ,
-                encoding = 'utf-8'
-            )
-            self._logger = logging.getLogger(self._ROOT)
-            self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
-        else:
-            os.mkdir(os.path.join(self._EXEPATH , 'log'))
-            self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
-            self.__init_SHRLogCoreRecorder()
+        try:
+            if os.path.exists(os.path.join(self._EXEPATH , 'log')):
+                logging.basicConfig(
+                    level = logging.DEBUG,
+                    format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    filename = os.path.join(self._EXEPATH , 'log' , f'{sync_system_time(True)}-{get_md5_hash(sync_system_time())}.log') ,
+                    datefmt = '%Y-%m-%d %H:%M:%S' ,
+                    encoding = 'utf-8'
+                )
+                self._logger = logging.getLogger(self._ROOT)
+                self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
+            else:
+                os.mkdir(os.path.join(self._EXEPATH , 'log'))
+                self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
+                self.__init_SHRLogCoreRecorder()
+        except Exception as e:
+            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1028] unable to init SHRLogCoreRecorder | {e}')
     
     def __clear_OutdatedLogs(self):
-        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isAutoClearOutdatedLogs']) and os.path.exists(os.path.join(self._EXEPATH , 'log')):
-            file_list = os.listdir(os.path.join(self._EXEPATH , 'log'))
-            for file in file_list:
-                file_path = os.path.join(os.path.join(self._EXEPATH , 'log') , file)
-                if os.path.isfile(file_path) and file_path.endswith('.log'):
-                    os.remove(file_path)
-            self.__outputLogsInConsole('INFO' , '过期日志清理完成')
+        try:
+            if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isAutoClearOutdatedLogs']) and os.path.exists(os.path.join(self._EXEPATH , 'log')):
+                file_list = os.listdir(os.path.join(self._EXEPATH , 'log'))
+                for file in file_list:
+                    file_path = os.path.join(os.path.join(self._EXEPATH , 'log') , file)
+                    if os.path.isfile(file_path) and file_path.endswith('.log'):
+                        os.remove(file_path)
+                self.__outputLogsInConsole('INFO' , '过期日志清理完成')
+        except Exception as e:
+            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1029] unable to clean outdated logs | {e}')
 
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
@@ -67,8 +80,9 @@ class SHRLogCore():
                     self.__rebulid_SHRLogCoreConfigSettings()
                     self.__outputLogsInConsole('WARNING' , f'SHRLogCoreConfigSettings.ini 丢失 SECTION 尝试恢复至默认设置')
                 self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
-            except:
+            except Exception as e:
                 self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件读取失败')
+                raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1030] unable to read SHRLogCoreConfigSettings.ini | {e}')
         else:
             self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
             self.__rebulid_SHRLogCoreConfigSettings()
@@ -82,7 +96,7 @@ class SHRLogCore():
             SHRConfigLoader_write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
             self.__init_SHRLogCoreConfigSettings()
         except Exception as e:
-            print(e)
+            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1031] unable to rebuild logcore config settings | {e}')
     
     def __outputLogsInConsole(self , log_level : str , log_message : str , log_source : str = None):
         """
@@ -105,21 +119,23 @@ class SHRLogCore():
                                     'CRITICAL' : '\033[35m'}
 
         END_COLOR : str = '\033[0m'
-        temp_frame = inspect.currentframe()
-        
-        if self._SHRLogCoreConfigSettings:
-            if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
-                if log_source:
-                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
+        try:
+            temp_frame = inspect.currentframe()
+            if self._SHRLogCoreConfigSettings:
+                if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
+                    if log_source:
+                        print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
+                    else:
+                        print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
                 else:
-                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+                    print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {END_COLOR}: {log_message}')
             else:
-                print(f'\033[1m{sync_system_time()}\033[0m {COLOR_CPT[self._SHRLogCoreConfigSettings['SHRLogCore_LogColor'][log_level]]}[{log_level}] {END_COLOR}: {log_message}')
-        else:
-            if log_source:
-                    print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
-            else:
-                print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+                if log_source:
+                        print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {log_source} {END_COLOR}: {log_message}')
+                else:
+                    print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
+        except Exception as e:
+            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1032] unable to output log to console | {e}')
 
 
     def add_log(self , log_level : str , log_message : str):
@@ -138,12 +154,15 @@ class SHRLogCore():
                             'ERROR' : self._logger.error ,
                             'CRITICAL' : self._logger.critical}
         
-        temp_frame = inspect.currentframe()
-        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputLogsInConsole']):
-            self.__outputLogsInConsole(log_level , log_message , temp_frame.f_back.f_code.co_name)
-        if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
-            log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
-        LOG_LEVEL_CPT[log_level](log_message)
+        try:
+            temp_frame = inspect.currentframe()
+            if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputLogsInConsole']):
+                self.__outputLogsInConsole(log_level , log_message , temp_frame.f_back.f_code.co_name)
+            if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
+                log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
+            LOG_LEVEL_CPT[log_level](log_message)
+        except Exception as e:
+            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1033] unable to record | {e}')
 
     def update_log_config(self , section : str , key : str , value : str) -> bool:
         try:
@@ -151,5 +170,5 @@ class SHRLogCore():
             SHRConfigLoader_write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
             self.add_log('DEBUG' , '配置文件文件更新完成')
             return True
-        except:
-            return False
+        except Exception as e:
+            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1034] unable to update log config file | {e}')
