@@ -57,7 +57,7 @@ class SHRLogCore():
                 self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
                 self.__init_SHRLogCoreRecorder()
         except Exception as e:
-            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1028] unable to init SHRLogCoreRecorder | {e}')
+            raise SHRLogCoreException(f'SHRLogCore [ERROR.1028] unable to init SHRLogCoreRecorder | {e}')
     
     def __clear_OutdatedLogs(self):
         try:
@@ -69,7 +69,7 @@ class SHRLogCore():
                         os.remove(file_path)
                 self.__outputLogsInConsole('INFO' , '过期日志清理完成')
         except Exception as e:
-            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1029] unable to clean outdated logs | {e}')
+            raise SHRLogCoreException(f'SHRLogCore [ERROR.1029] unable to clean outdated logs | {e}')
 
     def __init_SHRLogCoreConfigSettings(self):
         if os.path.exists(os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini')):
@@ -82,7 +82,7 @@ class SHRLogCore():
                 self.__outputLogsInConsole('INFO' , 'SHRLogCoreConfigSettings.ini 文件读取成功')
             except Exception as e:
                 self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件读取失败')
-                raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1030] unable to read SHRLogCoreConfigSettings.ini | {e}')
+                raise SHRLogCoreException(f'SHRLogCore [ERROR.1030] unable to read SHRLogCoreConfigSettings.ini | {e}')
         else:
             self.__outputLogsInConsole('CRITICAL' , 'SHRLogCoreConfigSettings.ini 文件丢失')
             self.__rebulid_SHRLogCoreConfigSettings()
@@ -96,7 +96,7 @@ class SHRLogCore():
             SHRConfigLoader_write_ini_file(self._SHRLogCoreDefaultConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
             self.__init_SHRLogCoreConfigSettings()
         except Exception as e:
-            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1031] unable to rebuild logcore config settings | {e}')
+            raise SHRLogCoreException(f'SHRLogCore [ERROR.1031] unable to rebuild logcore config settings | {e}')
     
     def __outputLogsInConsole(self , log_level : str , log_message : str , log_source : str = None):
         """
@@ -135,7 +135,7 @@ class SHRLogCore():
                 else:
                     print(f'\033[1m{sync_system_time()}\033[0m {LOG_LEVEL_COLOR_CPT[log_level]}[{log_level}] {temp_frame.f_back.f_code.co_name} {END_COLOR}: {log_message}')
         except Exception as e:
-            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1032] unable to output log to console | {e}')
+            raise SHRLogCoreException(f'SHRLogCore [ERROR.1032] unable to output log to console | {e}')
 
 
     def add_log(self , log_level : str , log_message : str):
@@ -162,7 +162,7 @@ class SHRLogCore():
                 log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
             LOG_LEVEL_CPT[log_level](log_message)
         except Exception as e:
-            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1033] unable to record | {e}')
+            raise SHRLogCoreException(f'SHRLogCore [ERROR.1033] unable to record | {e}')
 
     def update_log_config(self , section : str , key : str , value : str) -> bool:
         try:
@@ -171,4 +171,4 @@ class SHRLogCore():
             self.add_log('DEBUG' , '配置文件文件更新完成')
             return True
         except Exception as e:
-            raise SHRLogCoreException(f'SHRJsonLoader [ERROR.1034] unable to update log config file | {e}')
+            raise SHRLogCoreException(f'SHRLogCore [ERROR.1034] unable to update log config file | {e}')

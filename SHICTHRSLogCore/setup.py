@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='SHICTHRSLogCore',
-      version='1.6.0',
+      version='1.7.0',
       description='SHICTHRS LOG CORE logging system',
       url='https://github.com/JNTMTMTM/SHICTHRS_LogCore',
       author='SHICTHRS',
