@@ -1,2 +1,3 @@
 colorama==0.4.6
 pytz==2025.2
+SHICTHRSConfigLoader==1.4.0
