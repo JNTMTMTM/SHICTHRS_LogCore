@@ -56,11 +56,11 @@ from SHRLogCore import SHRLogCore
 logger = SHRLogCore()
 
 # 添加不同级别的日志
-logger.add_log('INFO', '这是一条信息日志')
-logger.add_log('DEBUG', '这是一条调试日志')
-logger.add_log('WARNING', '这是一条警告日志')
-logger.add_log('ERROR', '这是一条错误日志')
-logger.add_log('CRITICAL', '这是一条严重错误日志')
+logger.org_add_log('INFO', '这是一条信息日志')
+logger.org_add_log('DEBUG', '这是一条调试日志')
+logger.org_add_log('WARNING', '这是一条警告日志')
+logger.org_add_log('ERROR', '这是一条错误日志')
+logger.org_add_log('CRITICAL', '这是一条严重错误日志')
 ```
 
 ### 配置选项
@@ -88,10 +88,10 @@ logger = SHRLogCore()
 
 # 在不同函数中使用
 def function_a():
-    logger.add_log('INFO', '在函数A中记录日志')
+    logger.org_add_log('INFO', '在函数A中记录日志')
 
 def function_b():
-    logger.add_log('WARNING', '在函数B中记录警告')
+    logger.org_add_log('WARNING', '在函数B中记录警告')
 
 function_a()
 function_b()

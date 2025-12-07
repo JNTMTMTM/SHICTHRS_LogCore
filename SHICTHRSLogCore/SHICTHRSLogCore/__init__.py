@@ -50,7 +50,7 @@ class SHRLogCore():
                     encoding = 'utf-8'
                 )
                 self._logger = logging.getLogger(self._ROOT)
-                self.add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
+                self.org_add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
             else:
                 os.mkdir(os.path.join(self._EXEPATH , 'log'))
                 self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
@@ -137,7 +137,7 @@ class SHRLogCore():
             raise SHRLogCoreException(f'SHRLogCore [ERROR.1032] unable to output log to console | {e}')
 
 
-    def add_log(self , log_level : str , log_message : str):
+    def org_add_log(self , log_level : str , log_message : str):
         """
         >>> LOG_LEVEL_CPT   | LOG-LEVELS
         --------------------|-------------
@@ -167,7 +167,7 @@ class SHRLogCore():
         try:
             self._SHRLogCoreConfigSettings[section][key] = value
             SHRConfigLoader_write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
-            self.add_log('DEBUG' , '配置文件文件更新完成')
+            self.org_add_log('DEBUG' , '配置文件文件更新完成')
             return True
         except Exception as e:
             raise SHRLogCoreException(f'SHRLogCore [ERROR.1034] unable to update log config file | {e}')
