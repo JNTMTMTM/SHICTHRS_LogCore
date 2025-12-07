@@ -50,7 +50,7 @@ class SHRLogCore():
                     encoding = 'utf-8'
                 )
                 self._logger = logging.getLogger(self._ROOT)
-                self.org_add_log('INFO' , 'SHRLogCore 日志记录器初始化完成')
+                self.org_add_log('INFO' , 'SHRLogCore 日志记录器初始化完成' , inspect.currentframe().f_back.f_code.co_name)
             else:
                 os.mkdir(os.path.join(self._EXEPATH , 'log'))
                 self.__outputLogsInConsole('INFO' , 'log 文件夹已创建')
@@ -137,7 +137,7 @@ class SHRLogCore():
             raise SHRLogCoreException(f'SHRLogCore [ERROR.1032] unable to output log to console | {e}')
 
 
-    def org_add_log(self , log_level : str , log_message : str):
+    def org_add_log(self , log_level : str , log_message : str , call_function):
         """
         >>> LOG_LEVEL_CPT   | LOG-LEVELS
         --------------------|-------------
@@ -153,12 +153,11 @@ class SHRLogCore():
                             'ERROR' : self._logger.error ,
                             'CRITICAL' : self._logger.critical}
         
-        try:
-            temp_frame = inspect.currentframe()
+        try:            
             if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputLogsInConsole']):
-                self.__outputLogsInConsole(log_level , log_message , temp_frame.f_back.f_code.co_name)
+                self.__outputLogsInConsole(log_level , log_message , call_function)
             if eval(self._SHRLogCoreConfigSettings['SHRLogCore']['isOutputFunctionLoggerName']):
-                log_message = f'{temp_frame.f_back.f_code.co_name} | ' + log_message
+                log_message = f'{call_function} | ' + log_message
             LOG_LEVEL_CPT[log_level](log_message)
         except Exception as e:
             raise SHRLogCoreException(f'SHRLogCore [ERROR.1033] unable to record | {e}')
@@ -167,7 +166,7 @@ class SHRLogCore():
         try:
             self._SHRLogCoreConfigSettings[section][key] = value
             SHRConfigLoader_write_ini_file(self._SHRLogCoreConfigSettings , os.path.join(self._EXEPATH , 'config' , 'SHRLogCoreConfigSettings.ini'))
-            self.org_add_log('DEBUG' , '配置文件文件更新完成')
+            self.org_add_log('DEBUG' , '配置文件文件更新完成' , inspect.currentframe().f_back.f_code.co_name)
             return True
         except Exception as e:
             raise SHRLogCoreException(f'SHRLogCore [ERROR.1034] unable to update log config file | {e}')
