@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='SHICTHRSLogCore',
-      version='1.11.0',
+      version='1.12.0',
       description='SHICTHRS LOG CORE logging system',
       url='https://github.com/JNTMTMTM/SHICTHRS_LogCore',
       author='SHICTHRS',
@@ -9,5 +9,5 @@ setup(name='SHICTHRSLogCore',
       license='GPL-3.0',
       packages=find_packages(),
       include_package_data=True,
-      install_requires=['colorama==0.4.6' , 'pytz==2025.2' , 'SHICTHRSConfigLoader==1.4.0'],
+      install_requires=['colorama==0.4.6' , 'pytz==2025.2' , 'SHICTHRSConfigLoader==1.5.0'],
       zip_safe=False)
